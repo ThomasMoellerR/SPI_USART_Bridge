@@ -1,0 +1,8 @@
+You probably have to pre-fill the slave output buffer with one byte 
+(0x00) to have this byte being sent out on MISO out while transmitting 
+the command byte.
+Also you have to make sure the slave is able to process the command byte 
+fast enough to load the 4-byte answer into the output buffer before the 
+9th bit clock cycle occurs.
+Maybe a short delay between end of command byte and clocking in MISO 
+data is necessary here.
