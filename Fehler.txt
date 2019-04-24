@@ -1,0 +1,76 @@
+
+
+STMicroelectronics ST-LINK GDB server. Version 5.1.0
+Copyright (c) 2018, STMicroelectronics. All rights reserved.
+
+Starting server with the following options:
+        Persistent Mode            : Disabled
+        Logging Level              : 1
+        Listen Port Number         : 61234
+        Status Refresh Delay       : 15s
+        Verbose Mode               : Disabled
+        SWD Debug                  : Enabled
+
+Waiting for debugger connection...
+Debugger connected
+      -------------------------------------------------------------------
+                       STM32CubeProgrammer v1.3.0                  
+      -------------------------------------------------------------------
+
+
+
+Log output file:   C:\Users\computer\AppData\Local\Temp\STM32CubeProgrammer_a14548.log
+ST-LINK SN  : 54FF71066678574936452467
+ST-LINK FW  : V2J33S0
+Voltage     : 2.91V
+SWD freq    : 4000 KHz
+Connect mode: Under Reset
+Reset mode  : Hardware reset
+Device ID   : 0x410
+Device name : STM32F101/F102/F103 Medium-density
+Device type : MCU
+Device CPU  : Cortex-M3
+
+
+
+Memory Programming ...
+Opening and parsing file: C:\Users\computer\AppData\Local\Temp\ST-LINK_GDB_server_a14548.srec
+  File          : C:\Users\computer\AppData\Local\Temp\ST-LINK_GDB_server_a14548.srec
+  Size          : 6444 Bytes
+  Address       : 0x08000000 
+
+
+Erasing memory corresponding to segment 0:
+Erasing internal memory sectors [0 6]
+Download in Progress:
+
+
+File download complete
+Time elapsed during download operation: 00:00:00.466
+
+
+
+Verifying ...
+
+
+
+
+Download verified successfully 
+
+
+Error in executing 'cont' command ... 
+CM3 Failed to print all registers
+FAILED to REGISTER Values from the target
+Target is not responding, retrying...
+Target is not responding, retrying...
+Target is not responding, retrying...
+Target is not responding, retrying...
+Target is not responding, retrying...
+Target is not responding, retrying...
+Target is not responding, retrying...
+Target is not responding, retrying...
+Target is not responding, retrying...
+Target is not responding, retrying...
+Debugger connection lost.
+Shutting down...
+
