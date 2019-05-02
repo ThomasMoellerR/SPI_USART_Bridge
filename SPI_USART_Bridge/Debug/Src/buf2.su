@@ -1,0 +1,6 @@
+buf2.c:61:6:BUF2_SndBuf_Put	16	static
+buf2.c:74:8:BUF2_u8SndBuf_Get	16	static
+buf2.c:88:8:BUF2_u8SndBuf_Empty	4	static
+buf2.c:100:6:BUF2_RecBuf_Put	16	static
+buf2.c:113:8:BUF2_u8RecBuf_Get	16	static
+buf2.c:127:8:BUF2_u8RecBuf_Empty	4	static
