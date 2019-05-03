@@ -1,0 +1,1 @@
+USART1, 2, 3 in der main.h auskommentieren. Denn diese werdeen in der CTL initialisiert. Reconfiguration nicht geklappt.
