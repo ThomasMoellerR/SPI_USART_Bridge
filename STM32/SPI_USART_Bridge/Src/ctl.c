@@ -43,6 +43,7 @@ TUINT8 ctl_SPI1_TxCounter_Backup = 0;
 TUINT8 ctl_Bytes_Read_From_Queue = 0;
 
 TUINT8 u8Temp;
+TUINT8 u8Length;
 
 
 enum {CTL_USART1, CTL_USART2, CTL_USART3} ctl_State = CTL_USART1;
@@ -192,53 +193,56 @@ void CTL_Main (void)
 		}
 
 
-		switch (SPI1_RxBuf[0])
+
+		u8Length = SPI1_RxBuf[1];
+
+		if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
 		{
-			case CTL_CMD_USART1_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
-										{
-											BUF1_SndBuf_Put(SPI1_RxBuf[i]);
-										}
+			switch (SPI1_RxBuf[0])
+			{
+				case CTL_CMD_USART1_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+											{
+												BUF1_SndBuf_Put(SPI1_RxBuf[i]);
+											}
 
 
-										if (!BUF1_u8SndBuf_Empty())
-										{
-											u8Temp = BUF1_u8SndBuf_Get();
-											HAL_UART_Transmit_IT(&huart1, &u8Temp, 1);
-										}
+											if (!BUF1_u8SndBuf_Empty())
+											{
+												u8Temp = BUF1_u8SndBuf_Get();
+												HAL_UART_Transmit_IT(&huart1, &u8Temp, 1);
+											}
 
-										break;
+											break;
 
-			case CTL_CMD_USART2_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
-										{
-											BUF2_SndBuf_Put(SPI1_RxBuf[i]);
-										}
+				case CTL_CMD_USART2_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+											{
+												BUF2_SndBuf_Put(SPI1_RxBuf[i]);
+											}
 
-										if (!BUF2_u8SndBuf_Empty())
-										{
-											u8Temp = BUF2_u8SndBuf_Get();
-											HAL_UART_Transmit_IT(&huart2, &u8Temp, 1);
-										}
+											if (!BUF2_u8SndBuf_Empty())
+											{
+												u8Temp = BUF2_u8SndBuf_Get();
+												HAL_UART_Transmit_IT(&huart2, &u8Temp, 1);
+											}
 
-										break;
+											break;
 
-			case CTL_CMD_USART3_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
-										{
-											BUF3_SndBuf_Put(SPI1_RxBuf[i]);
-										}
+				case CTL_CMD_USART3_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+											{
+												BUF3_SndBuf_Put(SPI1_RxBuf[i]);
+											}
 
-										if (!BUF3_u8SndBuf_Empty())
-										{
-											u8Temp = BUF3_u8SndBuf_Get();
-											HAL_UART_Transmit_IT(&huart3, &u8Temp, 1);
-										}
+											if (!BUF3_u8SndBuf_Empty())
+											{
+												u8Temp = BUF3_u8SndBuf_Get();
+												HAL_UART_Transmit_IT(&huart3, &u8Temp, 1);
+											}
 
-										break;
+											break;
 
-			default: break;
+				default: break;
+			}
 		}
-
-
-
 
 
 		// Then Transmit

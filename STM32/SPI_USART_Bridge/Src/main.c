@@ -365,10 +365,14 @@ static void MX_GPIO_Init(void)
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, ENABLE);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, DISABLE);
+	 if(hspi->Instance==SPI1)
+	 {
 
-	SPI1_TxCompleted = 1;
+		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, ENABLE);
+		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, DISABLE);
+
+		 SPI1_TxCompleted = 1;
+	 }
 }
 
 
