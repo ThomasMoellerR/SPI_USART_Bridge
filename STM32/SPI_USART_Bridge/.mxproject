@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/computer/STM32CubeIDE/workspace_1.0.0/SPI_USART_Bridge/Inc
+HeaderPath=C:/Users/computer/Desktop/SPI_USART_Bridge/STM32/SPI_USART_Bridge/Inc
 HeaderFiles=stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;
-SourcePath=C:/Users/computer/STM32CubeIDE/workspace_1.0.0/SPI_USART_Bridge/Src
+SourcePath=C:/Users/computer/Desktop/SPI_USART_Bridge/STM32/SPI_USART_Bridge/Src
 SourceFiles=stm32f1xx_it.c;stm32f1xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]

@@ -13,5 +13,5 @@ stm32f1xx_it.c:244:6:DMA1_Channel4_IRQHandler	8	static
 stm32f1xx_it.c:258:6:DMA1_Channel7_IRQHandler	8	static
 stm32f1xx_it.c:272:6:SPI1_IRQHandler	8	static
 stm32f1xx_it.c:290:6:USART1_IRQHandler	8	static
-stm32f1xx_it.c:305:6:USART2_IRQHandler	8	static
-stm32f1xx_it.c:320:6:USART3_IRQHandler	8	static
+stm32f1xx_it.c:304:6:USART2_IRQHandler	8	static
+stm32f1xx_it.c:319:6:USART3_IRQHandler	8	static

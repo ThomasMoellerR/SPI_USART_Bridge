@@ -26,6 +26,9 @@
 #define CTL_CMD_USART1_TX		0x11
 #define CTL_CMD_USART2_TX		0x12
 #define CTL_CMD_USART3_TX		0x13
+#define CTL_CMD_CONFIG_USART1   0x21
+#define CTL_CMD_CONFIG_USART2   0x22
+#define CTL_CMD_CONFIG_USART3   0x23
 
 /******************************************************************************
 *  Local Type Definitions
@@ -44,6 +47,9 @@ TUINT8 ctl_Bytes_Read_From_Queue = 0;
 
 TUINT8 u8Temp;
 TUINT8 u8Length;
+tyun_AnyData unAnyData;
+TUINT32 ctl_USART_Dynamic_Baudrate;
+
 
 
 enum {CTL_USART1, CTL_USART2, CTL_USART3} ctl_State = CTL_USART1;
@@ -94,7 +100,6 @@ void CTL_Ini (void)
 	memset(SPI1_TxBuf, 0, sizeof(SPI1_TxBuf));
 	memset(SPI1_RxBuf, 0, sizeof(SPI1_RxBuf));
 }
-
 
 
 
@@ -196,25 +201,28 @@ void CTL_Main (void)
 
 		u8Length = SPI1_RxBuf[1];
 
-		if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
+
+		switch (SPI1_RxBuf[0])
 		{
-			switch (SPI1_RxBuf[0])
-			{
-				case CTL_CMD_USART1_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+			case CTL_CMD_USART1_TX:		if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
+										{
+											for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
 											{
 												BUF1_SndBuf_Put(SPI1_RxBuf[i]);
 											}
-
 
 											if (!BUF1_u8SndBuf_Empty())
 											{
 												u8Temp = BUF1_u8SndBuf_Get();
 												HAL_UART_Transmit_IT(&huart1, &u8Temp, 1);
 											}
+										}
 
-											break;
+										break;
 
-				case CTL_CMD_USART2_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+			case CTL_CMD_USART2_TX:		if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
+										{
+											for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
 											{
 												BUF2_SndBuf_Put(SPI1_RxBuf[i]);
 											}
@@ -224,10 +232,13 @@ void CTL_Main (void)
 												u8Temp = BUF2_u8SndBuf_Get();
 												HAL_UART_Transmit_IT(&huart2, &u8Temp, 1);
 											}
+										}
 
-											break;
+										break;
 
-				case CTL_CMD_USART3_TX:		for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+			case CTL_CMD_USART3_TX:		if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
+										{
+											for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
 											{
 												BUF3_SndBuf_Put(SPI1_RxBuf[i]);
 											}
@@ -237,43 +248,90 @@ void CTL_Main (void)
 												u8Temp = BUF3_u8SndBuf_Get();
 												HAL_UART_Transmit_IT(&huart3, &u8Temp, 1);
 											}
+										}
+
+										break;
+
+
+			case CTL_CMD_CONFIG_USART1:		memcpy((char*)unAnyData.au8Data, (char*)&SPI1_RxBuf[1], 4);
+
+											ctl_USART_Dynamic_Baudrate = unAnyData.u32Data;
+
+
+											huart1.Instance = USART1;
+											huart1.Init.BaudRate = ctl_USART_Dynamic_Baudrate;
+											huart1.Init.WordLength = UART_WORDLENGTH_8B;
+											huart1.Init.StopBits = UART_STOPBITS_1;
+											huart1.Init.Parity = UART_PARITY_NONE;
+											huart1.Init.Mode = UART_MODE_TX_RX;
+											huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+											huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+											if (HAL_UART_Init(&huart1) != HAL_OK)
+											{
+											  Error_Handler();
+											}
 
 											break;
 
-				default: break;
-			}
+
+
+			case CTL_CMD_CONFIG_USART2:		memcpy((char*)unAnyData.au8Data, (char*)&SPI1_RxBuf[1], 4);
+
+											ctl_USART_Dynamic_Baudrate = unAnyData.u32Data;
+
+
+											huart2.Instance = USART2;
+											huart2.Init.BaudRate = ctl_USART_Dynamic_Baudrate;
+											huart2.Init.WordLength = UART_WORDLENGTH_8B;
+											huart2.Init.StopBits = UART_STOPBITS_1;
+											huart2.Init.Parity = UART_PARITY_NONE;
+											huart2.Init.Mode = UART_MODE_TX_RX;
+											huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+											huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+											if (HAL_UART_Init(&huart2) != HAL_OK)
+											{
+											  Error_Handler();
+											}
+
+											break;
+
+
+
+			case CTL_CMD_CONFIG_USART3:		memcpy((char*)unAnyData.au8Data, (char*)&SPI1_RxBuf[1], 4);
+
+											ctl_USART_Dynamic_Baudrate = unAnyData.u32Data;
+
+
+											huart3.Instance = USART3;
+											huart3.Init.BaudRate = ctl_USART_Dynamic_Baudrate;
+											huart3.Init.WordLength = UART_WORDLENGTH_8B;
+											huart3.Init.StopBits = UART_STOPBITS_1;
+											huart3.Init.Parity = UART_PARITY_NONE;
+											huart3.Init.Mode = UART_MODE_TX_RX;
+											huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+											huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+											if (HAL_UART_Init(&huart3) != HAL_OK)
+											{
+											  Error_Handler();
+											}
+
+											break;
+
+			default: break;
 		}
 
 
-		// Then Transmit
+
 		HAL_SPI_TransmitReceive_DMA(&hspi1, SPI1_TxBuf, SPI1_RxBuf, SPI1_TXRX_BUFFER_SIZE);
 
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/*
-	  HAL_SPI_Transmit_DMA(&hspi1, spi_tx_buff, 20);
-
-	  HAL_UART_Transmit_DMA(&huart1,tx_buff,10);
-
-	  HAL_Delay(3000);
-	  */
-	 // HAL_UART_Receive_IT(&huart2, rx_buff, 1);
-
 }
+
+
+
+
+
 
 /******************************************************************************
 *  Changes        :  
