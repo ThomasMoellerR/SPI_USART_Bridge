@@ -50,6 +50,10 @@ TUINT8 u8Length;
 tyun_AnyData unAnyData;
 TUINT32 ctl_USART_Dynamic_Baudrate;
 
+TUINT8 ctl_USART1_Configured = 0;
+TUINT8 ctl_USART2_Configured = 0;
+TUINT8 ctl_USART3_Configured = 0;
+
 
 
 enum {CTL_USART1, CTL_USART2, CTL_USART3} ctl_State = CTL_USART1;
@@ -91,11 +95,6 @@ DMA_HandleTypeDef hdma_usart3_tx;
 
 void CTL_Ini (void)
 {
-	HAL_UART_Receive_IT(&huart1, &BUF1_u8Buf,1);
-	HAL_UART_Receive_IT(&huart2, &BUF2_u8Buf,1);
-	HAL_UART_Receive_IT(&huart3, &BUF3_u8Buf,1);
-
-	//HAL_SPI_TransmitReceive_DMA(&hspi1, SPI1_TxBuf, SPI1_RxBuf, SPI1_TXRX_BUFFER_SIZE);
 
 	memset(SPI1_TxBuf, 0, sizeof(SPI1_TxBuf));
 	memset(SPI1_RxBuf, 0, sizeof(SPI1_RxBuf));
@@ -118,81 +117,93 @@ void CTL_Main (void)
 		SPI1_TxCompleted = 0;
 		ctl_SPI1_TxCounter = 0;
 
-		memset(SPI1_TxBuf, 0, sizeof(SPI1_TxBuf));
+//memset(SPI1_TxBuf, 0, sizeof(SPI1_TxBuf));
 
 		switch(ctl_State)
 		{
-			case CTL_USART1:	if (!BUF1_u8RecBuf_Empty())
+			case CTL_USART1:	if (ctl_USART1_Configured)
 								{
-									SPI1_TxBuf[ctl_SPI1_TxCounter++] = CTL_CMD_USART1_TX; // Cmd
-
-									ctl_SPI1_TxCounter += 1; // Skip the length byte. It depends on how many byte read from queue
-
-									ctl_Bytes_Read_From_Queue = 0;
-
-									while (!BUF1_u8RecBuf_Empty())
+									if (!BUF1_u8RecBuf_Empty())
 									{
-										SPI1_TxBuf[ctl_SPI1_TxCounter] = BUF1_u8RecBuf_Get(); // Data
-										ctl_SPI1_TxCounter++;
-										ctl_Bytes_Read_From_Queue++;
+										SPI1_TxBuf[ctl_SPI1_TxCounter++] = CTL_CMD_USART1_TX; // Cmd
 
-										if (ctl_SPI1_TxCounter == SPI1_TXRX_BUFFER_SIZE) break;
+										ctl_SPI1_TxCounter += 1; // Skip the length byte. It depends on how many byte read from queue
+
+										ctl_Bytes_Read_From_Queue = 0;
+
+										while (!BUF1_u8RecBuf_Empty())
+										{
+											SPI1_TxBuf[ctl_SPI1_TxCounter] = BUF1_u8RecBuf_Get(); // Data
+											ctl_SPI1_TxCounter++;
+											ctl_Bytes_Read_From_Queue++;
+
+											if (ctl_SPI1_TxCounter == SPI1_TXRX_BUFFER_SIZE) break;
+										}
+
+										SPI1_TxBuf[ctl_SPI1_TxCounter - ctl_Bytes_Read_From_Queue - 1] = ctl_Bytes_Read_From_Queue; // Length
 									}
 
-									SPI1_TxBuf[ctl_SPI1_TxCounter - ctl_Bytes_Read_From_Queue - 1] = ctl_Bytes_Read_From_Queue; // Length
-								}
+									ctl_State = CTL_USART2;
 
-								ctl_State = CTL_USART2;
+								}
 
 								break;
 
-			case CTL_USART2:	if (!BUF2_u8RecBuf_Empty())
+			case CTL_USART2:	if (ctl_USART2_Configured)
 								{
-									SPI1_TxBuf[ctl_SPI1_TxCounter++] = CTL_CMD_USART2_TX; // Cmd
-
-									ctl_SPI1_TxCounter += 1; // Skip the length byte. It depends on how many byte read from queue
-
-									ctl_Bytes_Read_From_Queue = 0;
-
-									while (!BUF2_u8RecBuf_Empty())
+									if (!BUF2_u8RecBuf_Empty())
 									{
-										SPI1_TxBuf[ctl_SPI1_TxCounter] = BUF2_u8RecBuf_Get(); // Data
-										ctl_SPI1_TxCounter++;
-										ctl_Bytes_Read_From_Queue++;
+										SPI1_TxBuf[ctl_SPI1_TxCounter++] = CTL_CMD_USART2_TX; // Cmd
 
-										if (ctl_SPI1_TxCounter == SPI1_TXRX_BUFFER_SIZE) break;
+										ctl_SPI1_TxCounter += 1; // Skip the length byte. It depends on how many byte read from queue
+
+										ctl_Bytes_Read_From_Queue = 0;
+
+										while (!BUF2_u8RecBuf_Empty())
+										{
+											SPI1_TxBuf[ctl_SPI1_TxCounter] = BUF2_u8RecBuf_Get(); // Data
+											ctl_SPI1_TxCounter++;
+											ctl_Bytes_Read_From_Queue++;
+
+											if (ctl_SPI1_TxCounter == SPI1_TXRX_BUFFER_SIZE) break;
+										}
+
+										SPI1_TxBuf[ctl_SPI1_TxCounter - ctl_Bytes_Read_From_Queue - 1] = ctl_Bytes_Read_From_Queue; // Length
 									}
 
-									SPI1_TxBuf[ctl_SPI1_TxCounter - ctl_Bytes_Read_From_Queue - 1] = ctl_Bytes_Read_From_Queue; // Length
+									ctl_State = CTL_USART3;
 								}
-
-								ctl_State = CTL_USART3;
 
 								break;
 
-			case CTL_USART3:	if (!BUF3_u8RecBuf_Empty())
+			case CTL_USART3:	if (ctl_USART3_Configured)
 								{
-									SPI1_TxBuf[ctl_SPI1_TxCounter++] = CTL_CMD_USART3_TX; // Cmd
-
-									ctl_SPI1_TxCounter += 1; // Skip the length byte. It depends on how many byte read from queue
-
-									ctl_Bytes_Read_From_Queue = 0;
-
-									while (!BUF3_u8RecBuf_Empty())
+									if (!BUF3_u8RecBuf_Empty())
 									{
-										SPI1_TxBuf[ctl_SPI1_TxCounter] = BUF3_u8RecBuf_Get(); // Data
-										ctl_SPI1_TxCounter++;
-										ctl_Bytes_Read_From_Queue++;
+										SPI1_TxBuf[ctl_SPI1_TxCounter++] = CTL_CMD_USART3_TX; // Cmd
 
-										if (ctl_SPI1_TxCounter == SPI1_TXRX_BUFFER_SIZE) break;
+										ctl_SPI1_TxCounter += 1; // Skip the length byte. It depends on how many byte read from queue
+
+										ctl_Bytes_Read_From_Queue = 0;
+
+										while (!BUF3_u8RecBuf_Empty())
+										{
+											SPI1_TxBuf[ctl_SPI1_TxCounter] = BUF3_u8RecBuf_Get(); // Data
+											ctl_SPI1_TxCounter++;
+											ctl_Bytes_Read_From_Queue++;
+
+											if (ctl_SPI1_TxCounter == SPI1_TXRX_BUFFER_SIZE) break;
+										}
+
+										SPI1_TxBuf[ctl_SPI1_TxCounter - ctl_Bytes_Read_From_Queue - 1] = ctl_Bytes_Read_From_Queue; // Length
 									}
 
-									SPI1_TxBuf[ctl_SPI1_TxCounter - ctl_Bytes_Read_From_Queue - 1] = ctl_Bytes_Read_From_Queue; // Length
+									ctl_State = CTL_USART1;
 								}
 
-								ctl_State = CTL_USART1;
-
 								break;
+
+
 
 			default:			break;
 		}
@@ -204,49 +215,59 @@ void CTL_Main (void)
 
 		switch (SPI1_RxBuf[0])
 		{
-			case CTL_CMD_USART1_TX:		if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
+			case CTL_CMD_USART1_TX:		if (ctl_USART1_Configured)
 										{
-											for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+											if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
 											{
-												BUF1_SndBuf_Put(SPI1_RxBuf[i]);
-											}
+												for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+												{
+													BUF1_SndBuf_Put(SPI1_RxBuf[i]);
+												}
 
-											if (!BUF1_u8SndBuf_Empty())
-											{
-												u8Temp = BUF1_u8SndBuf_Get();
-												HAL_UART_Transmit_IT(&huart1, &u8Temp, 1);
+												if (!BUF1_u8SndBuf_Empty())
+												{
+													u8Temp = BUF1_u8SndBuf_Get();
+													HAL_UART_Transmit_IT(&huart1, &u8Temp, 1);
+												}
 											}
 										}
 
 										break;
 
-			case CTL_CMD_USART2_TX:		if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
+			case CTL_CMD_USART2_TX:		if (ctl_USART2_Configured)
 										{
-											for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
-											{
-												BUF2_SndBuf_Put(SPI1_RxBuf[i]);
-											}
+											if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
 
-											if (!BUF2_u8SndBuf_Empty())
 											{
-												u8Temp = BUF2_u8SndBuf_Get();
-												HAL_UART_Transmit_IT(&huart2, &u8Temp, 1);
+												for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+												{
+													BUF2_SndBuf_Put(SPI1_RxBuf[i]);
+												}
+
+												if (!BUF2_u8SndBuf_Empty())
+												{
+													u8Temp = BUF2_u8SndBuf_Get();
+													HAL_UART_Transmit_IT(&huart2, &u8Temp, 1);
+												}
 											}
 										}
 
 										break;
 
-			case CTL_CMD_USART3_TX:		if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
+			case CTL_CMD_USART3_TX:		if (ctl_USART3_Configured)
 										{
-											for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+											if (u8Length <= SPI1_TXRX_BUFFER_SIZE)
 											{
-												BUF3_SndBuf_Put(SPI1_RxBuf[i]);
-											}
+												for (int i = 2; i < SPI1_RxBuf[1] + 2; i++)
+												{
+													BUF3_SndBuf_Put(SPI1_RxBuf[i]);
+												}
 
-											if (!BUF3_u8SndBuf_Empty())
-											{
-												u8Temp = BUF3_u8SndBuf_Get();
-												HAL_UART_Transmit_IT(&huart3, &u8Temp, 1);
+												if (!BUF3_u8SndBuf_Empty())
+												{
+													u8Temp = BUF3_u8SndBuf_Get();
+													HAL_UART_Transmit_IT(&huart3, &u8Temp, 1);
+												}
 											}
 										}
 
@@ -271,6 +292,11 @@ void CTL_Main (void)
 											  Error_Handler();
 											}
 
+
+											HAL_UART_Receive_IT(&huart1, &BUF1_u8Buf,1);
+
+											ctl_USART1_Configured = 1;
+
 											break;
 
 
@@ -293,6 +319,10 @@ void CTL_Main (void)
 											  Error_Handler();
 											}
 
+											HAL_UART_Receive_IT(&huart2, &BUF2_u8Buf,1);
+
+											ctl_USART2_Configured = 1;
+
 											break;
 
 
@@ -314,6 +344,10 @@ void CTL_Main (void)
 											{
 											  Error_Handler();
 											}
+
+											HAL_UART_Receive_IT(&huart3, &BUF3_u8Buf,1);
+
+											ctl_USART3_Configured = 1;
 
 											break;
 
