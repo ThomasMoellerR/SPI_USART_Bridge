@@ -20,7 +20,7 @@ extern "C" {
 *  Global Constants
 ******************************************************************************/
 
-#define SPI1_TXRX_BUFFER_SIZE 10
+#define SPI1_TXRX_BUFFER_SIZE 100
 
 /******************************************************************************
 *  Global Type Definitions

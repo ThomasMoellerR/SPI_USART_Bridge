@@ -395,6 +395,9 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, DISABLE);
 
 		 SPI1_TxCompleted = 1;
+
+		 SPI1_TxBuf[0] = 0; // Clear Command Field
+		 SPI1_TxBuf[1] = 0; // Clear Length Field
 	 }
 }
 
